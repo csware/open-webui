@@ -176,7 +176,7 @@ async def send_post_request(
 
         raise HTTPException(
             status_code=r.status if r else 500,
-            detail=detail if detail else "Open WebUI: Server Connection Error",
+            error=detail if detail else "Open WebUI: Server Connection Error",
         )
 
 
@@ -248,12 +248,12 @@ async def verify_connection(
         except aiohttp.ClientError as e:
             log.exception(f"Client error: {str(e)}")
             raise HTTPException(
-                status_code=500, detail="Open WebUI: Server Connection Error"
+                status_code=500, error="Open WebUI: Server Connection Error"
             )
         except Exception as e:
             log.exception(f"Unexpected error: {e}")
             error_detail = f"Unexpected error: {str(e)}"
-            raise HTTPException(status_code=500, detail=error_detail)
+            raise HTTPException(status_code=500, error=error_detail)
 
 
 @router.get("/config")
@@ -445,7 +445,7 @@ async def get_ollama_tags(
 
             raise HTTPException(
                 status_code=r.status_code if r else 500,
-                detail=detail if detail else "Open WebUI: Server Connection Error",
+                error=detail if detail else "Open WebUI: Server Connection Error",
             )
 
     if user.role == "user" and not BYPASS_MODEL_ACCESS_CONTROL:
@@ -487,7 +487,7 @@ async def get_ollama_versions(request: Request, url_idx: Optional[int] = None):
             else:
                 raise HTTPException(
                     status_code=500,
-                    detail=ERROR_MESSAGES.OLLAMA_NOT_FOUND,
+                    error=ERROR_MESSAGES.OLLAMA_NOT_FOUND,
                 )
         else:
             url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -512,7 +512,7 @@ async def get_ollama_versions(request: Request, url_idx: Optional[int] = None):
 
                 raise HTTPException(
                     status_code=r.status_code if r else 500,
-                    detail=detail if detail else "Open WebUI: Server Connection Error",
+                    error=detail if detail else "Open WebUI: Server Connection Error",
                 )
     else:
         return {"version": False}
@@ -593,7 +593,7 @@ async def push_model(
         else:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
             )
 
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -656,7 +656,7 @@ async def copy_model(
         else:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.source),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.source),
             )
 
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -700,7 +700,7 @@ async def copy_model(
 
         raise HTTPException(
             status_code=r.status_code if r else 500,
-            detail=detail if detail else "Open WebUI: Server Connection Error",
+            error=detail if detail else "Open WebUI: Server Connection Error",
         )
 
 
@@ -721,7 +721,7 @@ async def delete_model(
         else:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
             )
 
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -765,7 +765,7 @@ async def delete_model(
 
         raise HTTPException(
             status_code=r.status_code if r else 500,
-            detail=detail if detail else "Open WebUI: Server Connection Error",
+            error=detail if detail else "Open WebUI: Server Connection Error",
         )
 
 
@@ -779,7 +779,7 @@ async def show_model_info(
     if form_data.name not in models:
         raise HTTPException(
             status_code=400,
-            detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
+            error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.name),
         )
 
     url_idx = random.choice(models[form_data.name]["urls"])
@@ -824,7 +824,7 @@ async def show_model_info(
 
         raise HTTPException(
             status_code=r.status_code if r else 500,
-            detail=detail if detail else "Open WebUI: Server Connection Error",
+            error=detail if detail else "Open WebUI: Server Connection Error",
         )
 
 
@@ -860,7 +860,7 @@ async def embed(
         else:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.model),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.model),
             )
 
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -904,7 +904,7 @@ async def embed(
 
         raise HTTPException(
             status_code=r.status_code if r else 500,
-            detail=detail if detail else "Open WebUI: Server Connection Error",
+            error=detail if detail else "Open WebUI: Server Connection Error",
         )
 
 
@@ -939,7 +939,7 @@ async def embeddings(
         else:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.model),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.model),
             )
 
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -983,7 +983,7 @@ async def embeddings(
 
         raise HTTPException(
             status_code=r.status_code if r else 500,
-            detail=detail if detail else "Open WebUI: Server Connection Error",
+            error=detail if detail else "Open WebUI: Server Connection Error",
         )
 
 
@@ -1024,7 +1024,7 @@ async def generate_completion(
         else:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.model),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(form_data.model),
             )
 
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -1082,7 +1082,7 @@ async def get_ollama_url(request: Request, model: str, url_idx: Optional[int] = 
         if model not in models:
             raise HTTPException(
                 status_code=400,
-                detail=ERROR_MESSAGES.MODEL_NOT_FOUND(model),
+                error=ERROR_MESSAGES.MODEL_NOT_FOUND(model),
             )
         url_idx = random.choice(models[model].get("urls", []))
     url = request.app.state.config.OLLAMA_BASE_URLS[url_idx]
@@ -1108,7 +1108,7 @@ async def generate_chat_completion(
         log.exception(e)
         raise HTTPException(
             status_code=400,
-            detail=str(e),
+            error=str(e),
         )
 
     payload = {**form_data.model_dump(exclude_none=True)}
@@ -1142,14 +1142,14 @@ async def generate_chat_completion(
                 )
             ):
                 raise HTTPException(
-                    status_code=403,
-                    detail="Model not found",
+                    status_code=400,
+                    error="Model not found",
                 )
     elif not bypass_filter:
         if user.role != "admin":
             raise HTTPException(
-                status_code=403,
-                detail="Model not found",
+                status_code=400,
+                error="Model not found",
             )
 
     if ":" not in payload["model"]:
@@ -1216,7 +1216,7 @@ async def generate_openai_completion(
         log.exception(e)
         raise HTTPException(
             status_code=400,
-            detail=str(e),
+            error=str(e),
         )
 
     payload = {**form_data.model_dump(exclude_none=True, exclude=["metadata"])}
@@ -1246,13 +1246,13 @@ async def generate_openai_completion(
             ):
                 raise HTTPException(
                     status_code=403,
-                    detail="Model not found",
+                    error="Model not found",
                 )
     else:
         if user.role != "admin":
             raise HTTPException(
                 status_code=403,
-                detail="Model not found",
+                error="Model not found",
             )
 
     if ":" not in payload["model"]:
@@ -1294,7 +1294,7 @@ async def generate_openai_chat_completion(
         log.exception(e)
         raise HTTPException(
             status_code=400,
-            detail=str(e),
+            error=str(e),
         )
 
     payload = {**completion_form.model_dump(exclude_none=True, exclude=["metadata"])}
@@ -1326,13 +1326,13 @@ async def generate_openai_chat_completion(
             ):
                 raise HTTPException(
                     status_code=403,
-                    detail="Model not found",
+                    error="Model not found",
                 )
     else:
         if user.role != "admin":
             raise HTTPException(
                 status_code=403,
-                detail="Model not found",
+                error="Model not found",
             )
 
     if ":" not in payload["model"]:
@@ -1408,7 +1408,7 @@ async def get_openai_models(
 
             raise HTTPException(
                 status_code=r.status_code if r else 500,
-                detail=error_detail,
+                error=error_detail,
             )
 
     if user.role == "user" and not BYPASS_MODEL_ACCESS_CONTROL:
@@ -1516,7 +1516,7 @@ async def download_model(
     if not any(form_data.url.startswith(host) for host in allowed_hosts):
         raise HTTPException(
             status_code=400,
-            detail="Invalid file_url. Only URLs from allowed hosts are permitted.",
+            error="Invalid file_url. Only URLs from allowed hosts are permitted.",
         )
 
     if url_idx is None:
